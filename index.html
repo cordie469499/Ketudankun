@@ -4,7 +4,89 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>決断くん</title>
-  <link rel="stylesheet" href="決断くん.css">
+  <style>
+    :root {
+      --bg:#0f172a;
+      --fg:#ffffff;
+      --accent:#41bbce;
+      --ok:#34d399;     /* する */
+      --ng:#f87171;     /* しない */
+    }
+    html,body{
+      height:100%;
+      margin:0;
+      background: radial-gradient(1200px 800px at 50% 20%, #1f2937, var(--bg));
+      color:var(--fg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", 
+      Roboto, "Helvetica Neue", "Hiragino Kaku Gothic ProN", "Noto Sans JP", 
+      Arial, "Segoe UI Emoji", "Apple Color Emoji", sans-serif;
+    }
+    .wrap{
+      height:100%;
+      display:grid;
+      place-items:center;
+      gap:20px;
+      text-align:center;
+      padding:24px;
+    }
+    h1{
+      font-size:clamp(22px, 3.5vw, 28px);
+      letter-spacing:.06em;
+      opacity:.9;
+      margin:0 0 8px;
+    }
+    .btn{
+      width:min(60vmin, 320px);
+      height:min(60vmin, 320px);
+      border-radius:50%;
+      border:none;
+      cursor:pointer;
+      background:
+        radial-gradient(100% 100% at 30% 30%, #ffffff33, #00000000),
+        radial-gradient(120% 120% at 70% 80%, #00000055, #00000000),
+        linear-gradient(135deg, #38bdf8, #6366f1 60%, #22c55e);
+      box-shadow:
+        0 20px 40px #00000055,
+        inset 0 2px 6px #ffffff66,
+        inset 0 -6px 16px #00000055;
+      color:white;
+      font-size:clamp(22px, 4.5vw, 28px);
+      font-weight:700;
+      letter-spacing:.08em;
+      transition: transform .08s ease, box-shadow .2s ease, filter .2s ease;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:active{
+      transform:translateY(2px) scale(.99);
+      box-shadow:
+        0 10px 24px #00000066,
+        inset 0 1px 3px #ffffff55,
+        inset 0 -4px 12px #00000066;
+      filter:saturate(1.1);
+    }
+    .hint{opacity:.7; font-size:14px}
+    .result{
+      min-height:3lh;
+      font-size:clamp(26px, 6vw, 42px);
+      font-weight:800;
+      letter-spacing:.06em;
+      margin-top:8px;
+      transition: transform .2s ease, opacity .2s ease;
+    }
+    .result.ok{ color: var(--ok); text-shadow: 0 0 12px #10b98133; }
+    .result.ng{ color: var(--ng); text-shadow: 0 0 12px #ef444433; }
+    .prob{ opacity:.8; font-size:14px; margin-top:2px; }
+    .shake{ animation:shake .25s ease; }
+    @keyframes shake {
+      0%{ transform:translateX(0) }
+      25%{ transform:translateX(-4px) }
+      50%{ transform:translateX(4px) }
+      75%{ transform:translateX(-3px) }
+      100%{ transform:translateX(0) }
+    }
+    .hidden{ display:none; }
+  </style>
 </head>
 <body>
   <div class="wrap">
@@ -14,6 +96,42 @@
     <div class="hint"></div>
   </div>
 
-  <script src="決断くん.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const btn = document.getElementById("decideBtn");
+      const resultDiv = document.getElementById("result");
+
+      btn.addEventListener("click", () => {
+        // ボタンを消す
+        btn.style.display = "none";
+
+        // 結果表示を中央に
+        resultDiv.classList.remove("hidden");
+
+        let showDo = true; // 「する／しない」交互フラグ
+
+        // 0.3秒間隔で「する／しない」を交互に表示
+        const intervalId = setInterval(() => {
+          resultDiv.textContent = showDo ? "する" : "しない";
+          showDo = !showDo;
+        }, 300);
+
+        // 3秒後に最終結果を表示
+        setTimeout(() => {
+          clearInterval(intervalId); // 点滅停止
+          const rand = Math.random();
+          if (rand < 0.6) {
+            resultDiv.textContent = "する";
+            resultDiv.classList.add("ok");
+            resultDiv.classList.remove("ng");
+          } else {
+            resultDiv.textContent = "しない";
+            resultDiv.classList.add("ng");
+            resultDiv.classList.remove("ok");
+          }
+        }, 3000);
+      });
+    });
+  </script>
 </body>
 </html>
